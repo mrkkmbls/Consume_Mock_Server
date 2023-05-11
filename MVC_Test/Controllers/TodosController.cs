@@ -2,6 +2,7 @@
 using MVC_Test.Models;
 using Newtonsoft.Json;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -48,6 +49,21 @@ namespace MVC_Test.Controllers
             {
                 var data = response.Content.ReadAsStringAsync().Result;// json standard
                 Todo todo = JsonConvert.DeserializeObject<Todo>(data);
+                return todo;
+            }
+            return null;
+        }
+
+        public Todo UpdateTodo(int todoId, Todo newTodo)
+        {
+            string data = JsonConvert.SerializeObject(newTodo);
+            StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
+
+            var response = httpClient.PutAsync(baseURL + "/todos/" + todoId, content).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var responsecontent = response.Content.ReadAsStringAsync().Result;
+                Todo todo = JsonConvert.DeserializeObject<Todo>(responsecontent);
                 return todo;
             }
             return null;
